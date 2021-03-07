@@ -20,7 +20,6 @@ const config = {
 };
 
 /* Don't use ts-node during integration tests */
-if (!isIntegrationTest)
-  config.require = ['ts-node/register', 'tsconfig-paths/register'];
+if (!isIntegrationTest) config.require = ['ts-node/register'];
 
 module.exports = config;
