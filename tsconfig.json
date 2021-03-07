@@ -1,0 +1,10 @@
+{
+  "extends": "./config/tsconfig-base",
+  "compilerOptions": {
+    "sourceMap": true
+  },
+  "ts-node": {
+    "files": true,
+    "transpileOnly": true
+  }
+}

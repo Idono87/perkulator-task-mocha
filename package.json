@@ -1,0 +1,52 @@
+{
+  "name": "perkulator-task-mocha",
+  "version": "0.1.0",
+  "description": "Mocha task for Perkulator",
+  "main": "dist/index.js",
+  "scripts": {
+    "typeCheck": "tsc --noEmit",
+    "lint": "eslint . --ext .ts",
+    "pretest": "npm run lint && npm run typeCheck",
+    "test": "cross-env NODE_ENV=test mocha",
+    "coverage": "nyc npm test",
+    "prebuild": "rimraf ./dist",
+    "build": "tsc --build ./config/tsconfig-production.json"
+  },
+  "author": "Sorin Sandru",
+  "license": "ISC",
+  "dependencies": {
+    "anymatch": "^3.1.1",
+    "chalk": "^4.1.0",
+    "slash": "^3.0.0",
+    "mocha": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/anymatch": "^1.3.1",
+    "@types/chai": "^4.2.15",
+    "@types/chalk": "^2.2.0",
+    "@types/mocha": "^8.2.1",
+    "@types/node": "^14.14.31",
+    "@types/sinon": "^9.0.10",
+    "@types/sinon-chai": "^3.2.5",
+    "@typescript-eslint/eslint-plugin": "^4.16.1",
+    "@typescript-eslint/parser": "^4.16.1",
+    "chai": "^4.3.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.21.0",
+    "eslint-cli": "^1.1.1",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-config-standard-with-typescript": "^19.0.1",
+    "eslint-formatter-pretty": "^4.0.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1",
+    "eslint-plugin-standard": "^5.0.0",
+    "prettier": "^2.2.1",
+    "rimraf": "^3.0.2",
+    "sinon": "^9.2.4",
+    "sinon-chai": "^3.5.0",
+    "ts-node": "^9.1.1",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^4.2.2"
+  }
+}

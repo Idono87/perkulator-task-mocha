@@ -1,0 +1,23 @@
+# Ignore everything
+*
+*/
+
+# Whitelist src
+!src/
+!src/**
+
+# Rest
+!.eslintignore
+!.eslintrc.yaml
+!package.json
+!package-lock.json
+!.mocharc.js
+!.gitignore
+!tsconfig.json
+!.prettierrc.yaml
+!.npmrc
+!.npmignore
+!.circleci/
+!.circleci/config.yml
+!config/
+!config/*
