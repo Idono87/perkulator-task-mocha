@@ -51,7 +51,7 @@ jobs:
           at: ./
       - run:
           name: Unit test
-          command: npm run test-unit -- --reporter mocha-junit-reporter --reporter-option mochaFile="./test-results/mocha/results.xml"
+          command: npm run test -- --reporter mocha-junit-reporter --reporter-option mochaFile="./test-results/mocha/results.xml"
       - store_test_results:
           path: test-results
 
