@@ -1,11 +1,4 @@
-process.env.PERKULATOR_LOG_SILENT = true;
-
-const isIntegrationTest = Boolean(process.env.INTEGRATION_TEST);
-const spec = isIntegrationTest
-  ? 'dist/__tests__/integration/**/*.test.js'
-  : 'src/__tests__/unit/**/*.test.ts';
-
-const config = {
+module.exports = {
   allowUncaught: false,
   bail: false,
   delay: false,
@@ -15,11 +8,7 @@ const config = {
   exit: true,
   useStrict: true,
   extensions: ['.ts'],
+  require: ['ts-node/register'],
   reporter: 'min',
-  spec,
+  spec: ['src/__tests__/**/*.test.ts'],
 };
-
-/* Don't use ts-node during integration tests */
-if (!isIntegrationTest) config.require = ['ts-node/register'];
-
-module.exports = config;
