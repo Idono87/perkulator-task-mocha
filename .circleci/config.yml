@@ -3,12 +3,12 @@ executors:
   node-14_16_0:
     docker:
       - image: circleci/node:14.16.0
-    working_directory: ~/perkulator
+    working_directory: ~/perkulator-task-mocha
 
 parameters:
   node_modules_cache_key:
     type: string
-    default: perkulator-node_modules-{{checksum "package-lock.json"}}
+    default: perkulator-task-mocha-node_modules-{{checksum "package-lock.json"}}
 
 jobs:
   init:
@@ -51,15 +51,7 @@ jobs:
           at: ./
       - run:
           name: Unit test
-          command: npm run test-unit -- --reporter mocha-junit-reporter --reporter-option mochaFile="./test-results/mocha/unit-test.xml"
-      - store_test_results:
-          path: test-results
-  integrationTest:
-    executor: node-14_16_0
-    steps:
-      - attach_workspace:
-          at: ./
-      - run: npm run test-integration -- --reporter mocha-junit-reporter --reporter-option mochaFile="./test-results/mocha/integration-test.xml"
+          command: npm run test-unit -- --reporter mocha-junit-reporter --reporter-option mochaFile="./test-results/mocha/results.xml"
       - store_test_results:
           path: test-results
 
@@ -75,10 +67,6 @@ workflows:
           requires:
             - init
       - unitTest:
-          requires:
-            - lint
-            - typeCheck
-      - integrationTest:
           requires:
             - lint
             - typeCheck
