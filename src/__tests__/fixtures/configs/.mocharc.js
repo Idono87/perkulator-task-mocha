@@ -1,0 +1,3 @@
+module.exports = {
+  spec: '/fixture',
+};

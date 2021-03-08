@@ -5,3 +5,6 @@
 # Whitelist the src folder.
 !src/
 !src/**
+
+# Ignore in src
+src/__tests__/fixtures/
