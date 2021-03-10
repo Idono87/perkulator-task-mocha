@@ -10,6 +10,8 @@ export interface MochaRC extends Mocha.MochaOptions {
   spec?: string | string[];
 }
 
+let runningRunner: Mocha.Runner | null = null;
+
 export const run: RunnableTask['run'] = async function (changedPaths, update, options): Promise<TaskResultsObject> {
   const { extension, spec, ...mochaOptions } = Object.assign<MochaRC, MochaRC>(
     (await loadOptions()) ?? {},
@@ -38,10 +40,17 @@ export const run: RunnableTask['run'] = async function (changedPaths, update, op
     };
 
     mocha.reporter(TaskReporter, { handleResult });
-    mocha.run();
+    runningRunner = mocha.run();
   });
 
   mocha.unloadFiles();
+  runningRunner = null;
 
   return results;
+};
+
+export const stop = (): void => {
+  if (runningRunner !== null) {
+    runningRunner.abort();
+  }
 };

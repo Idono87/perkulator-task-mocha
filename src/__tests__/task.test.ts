@@ -4,7 +4,7 @@ import * as sinonChai from 'sinon-chai';
 import * as Mocha from 'mocha';
 import * as chalk from 'chalk';
 
-import { run, MochaRC } from '../index';
+import { run, stop, MochaRC } from '../index';
 import * as utils from '../utils';
 import { createFilePaths, createMixedFilePaths, createTestFilePaths } from './util/util';
 
@@ -108,6 +108,23 @@ describe('Task', function () {
         .and.be.an('array')
         .and.not.have.members(['\x1B[33mSkipped. No changes to test files detected.\x1B[39m']);
       expect(resultsObject).to.have.property('errors').and.be.an('array').and.be.length(3);
+    });
+  });
+
+  describe('stop', function () {
+    it('Expect test run to be stopped', async function () {
+      const mochaRc: MochaRC = {
+        spec: './**/*.test.ts',
+      };
+      loadOptionsStub.returns(mochaRc);
+
+      setImmediate(stop);
+
+      await run(
+        { add: [require.resolve('./fixtures/tests/lengthy.test')], change: [], remove: [] },
+        () => {},
+        undefined,
+      );
     });
   });
 });
