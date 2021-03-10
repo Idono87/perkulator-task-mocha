@@ -8,6 +8,7 @@ module.exports = {
   exit: true,
   useStrict: true,
   extensions: ['.ts'],
+  exclude: ['**/fixtures/**/*'],
   require: ['ts-node/register'],
   reporter: 'min',
   spec: ['src/__tests__/**/*.test.ts'],
