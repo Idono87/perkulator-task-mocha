@@ -20,7 +20,7 @@ describe('Task', function () {
   beforeEach(function () {
     loadOptionsStub = Sinon.stub(utils, 'loadOptions');
     moduleMapCacheStub = Sinon.createStubInstance(ModuleMapCache);
-    moduleMapCacheStub.getRootParents.returns([]);
+    moduleMapCacheStub.getRootModules.returns([]);
     Sinon.stub(ModuleMapCache, 'loadCache').returns(moduleMapCacheStub as any);
   });
 
@@ -65,7 +65,7 @@ describe('Task', function () {
       };
       loadOptionsStub.returns(mochaRc);
       const addFileSpy = Sinon.spy(Mocha.prototype, 'addFile');
-      moduleMapCacheStub.getRootParents.returns(cachedFiles);
+      moduleMapCacheStub.getRootModules.returns(cachedFiles);
 
       // Will error out. Files do not exist
       try {
@@ -120,6 +120,52 @@ describe('Task', function () {
       addedFiles.forEach((path) => {
         expect(moduleMapCacheStub.mapModule).to.be.calledWith(path);
       });
+    });
+
+    it('Expect test to be removed from cache', async function () {
+      const mochaRc: MochaRC = {
+        spec: './**/*.test.ts',
+      };
+      const removedFiles = [require.resolve('./fixtures/tests/passing.test')];
+      const addedFiles = [require.resolve('./fixtures/cache/parent.test')];
+      loadOptionsStub.returns(mochaRc);
+
+      await run(
+        {
+          add: addedFiles,
+          change: [],
+          remove: removedFiles,
+        },
+        () => {},
+        undefined,
+      );
+
+      expect(moduleMapCacheStub.saveCache).to.be.calledOnce;
+      expect(moduleMapCacheStub.mapModule).to.be.calledOnceWith(addedFiles[0]);
+      expect(moduleMapCacheStub.clearModule).to.be.calledWith(removedFiles[0]);
+    });
+
+    it('Expect removed file to get cached test modules', async function () {
+      const mochaRc: MochaRC = {
+        spec: './**/*.test.ts',
+      };
+      const addedFiles = [require.resolve('./fixtures/cache/parent.test')];
+      const removedFiles = [require.resolve('./fixtures/cache/child')];
+      loadOptionsStub.returns(mochaRc);
+
+      await run(
+        {
+          add: addedFiles,
+          change: [],
+          remove: removedFiles,
+        },
+        () => {},
+        undefined,
+      );
+
+      expect(moduleMapCacheStub.saveCache).to.be.calledOnce;
+      expect(moduleMapCacheStub.mapModule).to.be.calledOnceWith(addedFiles[0]);
+      expect(moduleMapCacheStub.getRootModules).to.be.calledWith(removedFiles[0]);
     });
 
     it('Expect to get a result object with failures', async function () {

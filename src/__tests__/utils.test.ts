@@ -17,8 +17,8 @@ describe('Utilities', function () {
       ];
 
       const [includedPaths, excludedPaths] = filterPaths(paths, specs, extensions);
-      expect(includedPaths).to.have.keys(...paths.slice(0, 3));
-      expect(excludedPaths).to.have.keys(...paths.slice(3));
+      expect(includedPaths).to.have.members(paths.slice(0, 3));
+      expect(excludedPaths).to.have.members(paths.slice(3));
     });
 
     it('Expect to ignore extensions when spec path has an extension', function () {
@@ -33,8 +33,8 @@ describe('Utilities', function () {
       ];
 
       const [includedPaths, excludedPaths] = filterPaths(paths, specs, extensions);
-      expect(includedPaths).to.have.keys(...paths.splice(3, 1));
-      expect(excludedPaths).to.have.keys(...paths);
+      expect(includedPaths).to.have.members(paths.splice(3, 1));
+      expect(excludedPaths).to.have.members(paths);
     });
 
     it('Expect default paths', function () {
@@ -48,8 +48,8 @@ describe('Utilities', function () {
       ];
 
       const [includedPaths, excludedPaths] = filterPaths(paths);
-      expect(includedPaths).to.have.keys(...paths.splice(4, 1));
-      expect(excludedPaths).to.have.keys(...paths);
+      expect(includedPaths).to.have.members(paths.splice(4, 1));
+      expect(excludedPaths).to.have.members(paths);
     });
   });
 

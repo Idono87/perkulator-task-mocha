@@ -22,19 +22,28 @@ export const run: RunnableTask['run'] = async function (changedPaths, update, op
   );
   mochaOptions.reporter = undefined;
 
-  // Filter paths into included and excluded
-  const unfilteredPaths = Array.from(changedPaths.add).concat(changedPaths.change);
-  const specFilter: string[] = new Array<string>().concat(spec ?? '*');
-  const extensionFilter: string[] = new Array<string>().concat(extension ?? '.js');
-  const [includedPaths, excludedPaths] = filterPaths(unfilteredPaths, specFilter, extensionFilter);
+  const globs: string[] = new Array<string>().concat(spec ?? '*');
+  const extensions: string[] = new Array<string>().concat(extension ?? '.js');
 
-  // Retrieve all implicitly affected files and include them
-  for (const path of excludedPaths) {
-    const moduleRootParents = moduleMap.getRootParents(path);
-    moduleRootParents?.forEach((path) => includedPaths.add(path));
-  }
+  const [removedTestModules, removedFiles] = filterPaths(changedPaths.remove, globs, extensions);
+  const [changedTestModules, changedFiles] = filterPaths(
+    [...changedPaths.add, ...changedPaths.change],
+    globs,
+    extensions,
+  );
 
-  if (includedPaths.size === 0) {
+  removedTestModules.forEach((filePath) => moduleMap.clearModule(filePath));
+
+  const cachedTestModules = [changedFiles, removedFiles]
+    .flat()
+    .reduce(
+      (testModuleSet, filePath) => new Set([...moduleMap.getRootModules(filePath), ...testModuleSet]),
+      new Set<string>(),
+    );
+
+  const testModulePaths = new Set([...changedTestModules, ...cachedTestModules]);
+
+  if (testModulePaths.size === 0) {
     return {
       results: [chalk.yellow('Skipped. No changes to test files detected.')],
     };
@@ -42,7 +51,7 @@ export const run: RunnableTask['run'] = async function (changedPaths, update, op
 
   const mocha = new Mocha(mochaOptions);
 
-  includedPaths.forEach((modulePath) => mocha.addFile(modulePath));
+  testModulePaths.forEach((modulePath) => mocha.addFile(modulePath));
 
   const results = await new Promise<TaskResultsObject>((resolve, reject) => {
     const handleResult = (results: TaskResultsObject): void => {
@@ -55,7 +64,7 @@ export const run: RunnableTask['run'] = async function (changedPaths, update, op
 
   // Map and cache all files touched by mocha when all tests have passed.
   if (results.errors === undefined) {
-    includedPaths.forEach(moduleMap.mapModule);
+    testModulePaths.forEach(moduleMap.mapModule);
     moduleMap.saveCache();
   }
 

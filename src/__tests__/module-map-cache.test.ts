@@ -150,13 +150,13 @@ describe('Cache', function () {
     });
   });
 
-  describe('getRootParents', function () {
+  describe('getRootModules', function () {
     before(function () {
       require('./fixtures/cache/parent.test');
       require('./fixtures/cache/parent2.test');
     });
 
-    it('Expect child modules root parents', function () {
+    it('Expect to get root modules', function () {
       throwEnoentWithReadFileStub();
 
       const PARENT = path.resolve(__dirname, './fixtures/cache/parent.test.ts');
@@ -167,7 +167,7 @@ describe('Cache', function () {
       cache.mapModule(PARENT);
       cache.mapModule(PARENT2);
 
-      expect(cache.getRootParents(GRANDCHILD)).to.have.members([PARENT, PARENT2]);
+      expect(cache.getRootModules(GRANDCHILD)).to.have.members([PARENT, PARENT2]);
     });
   });
 });

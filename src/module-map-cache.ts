@@ -85,7 +85,7 @@ export class ModuleMapCache {
     this.moduleMap.delete(moduleId);
   }
 
-  public getRootParents(childModuleId: string): string[] {
+  public getRootModules(childModuleId: string): string[] {
     return Array.from(this.moduleMap.get(childModuleId) ?? []);
   }
 

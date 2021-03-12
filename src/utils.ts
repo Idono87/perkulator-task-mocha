@@ -88,7 +88,7 @@ export function filterPaths(
   filePaths: string[],
   spec: string[] = ['**/*.spec.js'],
   extensions?: string[],
-): [Set<string>, Set<string>] {
+): [string[], string[]] {
   const fileExtensions = extensions === undefined ? '' : `{${extensions?.join(',')}}`;
 
   const includeGlobList = spec.map((specPath) =>
@@ -97,11 +97,11 @@ export function filterPaths(
 
   const isIncludedPath = anymatch(includeGlobList);
 
-  return filePaths.reduce<[Set<string>, Set<string>]>(
+  return filePaths.reduce<[string[], string[]]>(
     ([includedPaths, excludedPaths], filePath) => {
-      isIncludedPath(filePath) ? includedPaths.add(filePath) : excludedPaths.add(filePath);
+      isIncludedPath(filePath) ? includedPaths.push(filePath) : excludedPaths.push(filePath);
       return [includedPaths, excludedPaths];
     },
-    [new Set(), new Set()],
+    [[], []],
   );
 }
