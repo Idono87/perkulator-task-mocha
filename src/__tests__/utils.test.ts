@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import * as path from 'path';
 
-import { filterSpecPaths, loadOptions } from '../utils';
+import { filterPaths, loadOptions } from '../utils';
 
 describe('Utilities', function () {
-  describe('filterTests', function () {
-    it('Expect paths with defined extensions', function () {
+  describe('filterPaths', function () {
+    it('Expect to filter by extensions', function () {
       const extensions = ['.ts', '.js', '.test.ejs'];
       const specs = ['**/*'];
       const paths = [
@@ -16,10 +16,12 @@ describe('Utilities', function () {
         '/allow/path.test.mjs',
       ];
 
-      expect(filterSpecPaths(paths, specs, extensions)).to.have.members(paths.slice(0, 3));
+      const [includedPaths, excludedPaths] = filterPaths(paths, specs, extensions);
+      expect(includedPaths).to.have.keys(...paths.slice(0, 3));
+      expect(excludedPaths).to.have.keys(...paths.slice(3));
     });
 
-    it('Expect paths without defined extensions', function () {
+    it('Expect to ignore extensions when spec path has an extension', function () {
       const extensions = ['.ts', '.js', '.test.ejs'];
       const specs = ['**/*.cpp'];
       const paths = [
@@ -30,19 +32,24 @@ describe('Utilities', function () {
         '/allow/path.test.mjs',
       ];
 
-      expect(filterSpecPaths(paths, specs, extensions)).to.have.members(paths.slice(3, 4));
+      const [includedPaths, excludedPaths] = filterPaths(paths, specs, extensions);
+      expect(includedPaths).to.have.keys(...paths.splice(3, 1));
+      expect(excludedPaths).to.have.keys(...paths);
     });
 
-    it('Expect all paths', function () {
+    it('Expect default paths', function () {
       const paths = [
         '/allow/path.ts',
         '/allow/path.js',
         '/allow/path.test.ejs',
         '/allow/path.cpp',
+        '/allow/path.spec.js',
         '/allow/path.test.mjs',
       ];
 
-      expect(filterSpecPaths(paths)).to.have.members(paths);
+      const [includedPaths, excludedPaths] = filterPaths(paths);
+      expect(includedPaths).to.have.keys(...paths.splice(4, 1));
+      expect(excludedPaths).to.have.keys(...paths);
     });
   });
 

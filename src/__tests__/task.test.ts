@@ -1,10 +1,11 @@
 import { expect, use } from 'chai';
-import { createSandbox, SinonStub } from 'sinon';
+import { createSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
 import * as sinonChai from 'sinon-chai';
 import * as Mocha from 'mocha';
 import * as chalk from 'chalk';
 
 import { run, stop, MochaRC } from '../index';
+import { ModuleMapCache } from '../module-map-cache';
 import * as utils from '../utils';
 import { createFilePaths, createMixedFilePaths, createTestFilePaths } from './util/util';
 
@@ -14,9 +15,13 @@ describe('Task', function () {
   const Sinon = createSandbox();
 
   let loadOptionsStub: SinonStub;
+  let moduleMapCacheStub: SinonStubbedInstance<ModuleMapCache>;
 
   beforeEach(function () {
     loadOptionsStub = Sinon.stub(utils, 'loadOptions');
+    moduleMapCacheStub = Sinon.createStubInstance(ModuleMapCache);
+    moduleMapCacheStub.getRootParents.returns([]);
+    Sinon.stub(ModuleMapCache, 'loadCache').returns(moduleMapCacheStub as any);
   });
 
   afterEach(function () {
@@ -53,6 +58,25 @@ describe('Task', function () {
       });
     });
 
+    it('Expect to add mapped test files', async function () {
+      const cachedFiles = ['./cached/testFile.js'];
+      const mochaRc: MochaRC = {
+        spec: './**/*.test.js',
+      };
+      loadOptionsStub.returns(mochaRc);
+      const addFileSpy = Sinon.spy(Mocha.prototype, 'addFile');
+      moduleMapCacheStub.getRootParents.returns(cachedFiles);
+
+      // Will error out. Files do not exist
+      try {
+        await run({ add: createMixedFilePaths(), change: [], remove: [] }, () => {}, undefined);
+      } catch (err) {}
+
+      createTestFilePaths().forEach((filePath) => {
+        expect(addFileSpy).to.be.calledWith(filePath);
+      });
+    });
+
     it('Expect to get a result object with no failures', async function () {
       const mochaRc: MochaRC = {
         spec: './**/*.test.ts',
@@ -70,6 +94,32 @@ describe('Task', function () {
         .and.be.an('array')
         .and.not.have.members(['\x1B[33mSkipped. No changes to test files detected.\x1B[39m']);
       expect(resultsObject).to.not.have.property('errors');
+    });
+
+    it('Expect a successful run to map and cache every test file', async function () {
+      const mochaRc: MochaRC = {
+        spec: './**/*.test.ts',
+      };
+      const addedFiles = [
+        require.resolve('./fixtures/tests/passing.test'),
+        require.resolve('./fixtures/cache/parent.test'),
+      ];
+      loadOptionsStub.returns(mochaRc);
+
+      await run(
+        {
+          add: addedFiles,
+          change: [],
+          remove: [],
+        },
+        () => {},
+        undefined,
+      );
+
+      expect(moduleMapCacheStub.saveCache).to.be.calledOnce;
+      addedFiles.forEach((path) => {
+        expect(moduleMapCacheStub.mapModule).to.be.calledWith(path);
+      });
     });
 
     it('Expect to get a result object with failures', async function () {
@@ -91,7 +141,23 @@ describe('Task', function () {
       expect(resultsObject).to.have.property('errors').and.be.an('array').and.be.length(8);
     });
 
-    it('Expect to get a result object with failures', async function () {
+    it('Expect failed run to keep old cache', async function () {
+      const mochaRc: MochaRC = {
+        spec: './**/*.test.ts',
+      };
+      loadOptionsStub.returns(mochaRc);
+
+      await run(
+        { add: [require.resolve('./fixtures/tests/failing.test')], change: [], remove: [] },
+        () => {},
+        undefined,
+      );
+
+      expect(moduleMapCacheStub.saveCache).to.not.be.called;
+      expect(moduleMapCacheStub.mapModule).to.not.be.called;
+    });
+
+    it('Expect to get a result object with mixed results', async function () {
       const mochaRc: MochaRC = {
         spec: './**/*.test.ts',
       };

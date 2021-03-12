@@ -84,14 +84,24 @@ export async function loadOptions(rcPath?: string): Promise<MochaRC | undefined>
   if (options !== undefined) return options;
 }
 
-export function filterSpecPaths(filePaths: string[], spec: string[] = ['**/*'], extensions?: string[]): string[] {
+export function filterPaths(
+  filePaths: string[],
+  spec: string[] = ['**/*.spec.js'],
+  extensions?: string[],
+): [Set<string>, Set<string>] {
   const fileExtensions = extensions === undefined ? '' : `{${extensions?.join(',')}}`;
 
   const includeGlobList = spec.map((specPath) =>
     path.extname(specPath) === '' ? `${specPath}${fileExtensions}` : specPath,
   );
 
-  const matcher = anymatch(includeGlobList);
+  const isIncludedPath = anymatch(includeGlobList);
 
-  return filePaths.filter((filePath) => matcher(filePath));
+  return filePaths.reduce<[Set<string>, Set<string>]>(
+    ([includedPaths, excludedPaths], filePath) => {
+      isIncludedPath(filePath) ? includedPaths.add(filePath) : excludedPaths.add(filePath);
+      return [includedPaths, excludedPaths];
+    },
+    [new Set(), new Set()],
+  );
 }
