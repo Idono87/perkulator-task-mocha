@@ -77,7 +77,7 @@ export const run: RunnableTask['run'] = async function (
 
   // Map and cache all files touched by mocha when all tests have passed.
   if (results.errors === undefined) {
-    testModulePaths.forEach(moduleMap.mapModule);
+    testModulePaths.forEach((modulePath) => moduleMap.mapModule(modulePath));
     moduleMap.saveCache();
   }
 
