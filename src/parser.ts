@@ -17,6 +17,8 @@ class Parser {
   private currentFile: string = '';
   private readonly failedTests: string[] = [];
   private testCount: number = 0;
+  private passedTestCount: number = 0;
+  private failedTestCount: number = 0;
 
   public constructor(suite: Suite) {
     this.rootSuite = suite;
@@ -26,7 +28,7 @@ class Parser {
     this.parseSuite(this.rootSuite);
 
     const resultsObject: TaskResultsObject = {
-      results: [buildResults(this.testCount, this.failedTests.length)],
+      results: [buildResults(this.testCount, this.passedTestCount, this.failedTestCount)],
     };
     this.failedTests.length > 0 && (resultsObject.errors = this.failedTests);
 
@@ -52,6 +54,8 @@ class Parser {
 
   private parseTest(test: Test): void {
     this.testCount++;
+    test.isPassed() && this.passedTestCount++;
+    test.isFailed() && this.failedTestCount++;
 
     if (test.err !== undefined) {
       this.failedTests.push(buildMessage(test.title, this.currentFile, test.err as DiffError, this.suitNestedTitles));
@@ -128,8 +132,15 @@ function parseDiff(diffResults: diff.Change[]): string {
   return diffLines.map((line) => `${indent(0)}${line}`).join('\n');
 }
 
-function buildResults(testCount: number, failedCount: number): string {
-  return chalk`\n\n{green ✓ ${testCount - failedCount} passed}\n${
-    failedCount > 0 ? chalk`❌ {red ${failedCount} failed}\n` : ''
-  }\n`;
+function buildResults(testCount: number, passedCount: number, failedCount: number): string {
+  const skippedCount = testCount - passedCount - failedCount;
+  const lines = [
+    chalk`\n\n🧪{blue ${testCount} total tests}\n`,
+    passedCount > 0 ? chalk`{green ✓ ${passedCount} passed}\n` : '',
+    failedCount > 0 ? chalk`❌ {red ${failedCount} failed}\n` : '',
+    skippedCount > 0 ? chalk`{yellow ↷ ${skippedCount} skipped}` : '',
+    `\n`,
+  ];
+
+  return lines.join('');
 }
