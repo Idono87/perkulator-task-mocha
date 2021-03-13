@@ -90,7 +90,8 @@ export function filterPaths(
   extension: string | string[] = ['.js', '.cjs', '.mjs'],
 ): [string[], string[]] {
   const globs: string[] = [spec].flat();
-  const fileExtensions = `{${[extension].flat().join(',')}}`;
+  const extensionList = [extension].flat();
+  const fileExtensions = extensionList.length > 1 ? `{${extensionList.join()}}` : extensionList[0];
 
   const includeGlobList = globs.map((globPath) =>
     path.extname(globPath) === '' ? `${globPath}${fileExtensions}` : globPath,

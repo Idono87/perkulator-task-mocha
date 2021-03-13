@@ -21,6 +21,22 @@ describe('Utilities', function () {
       expect(excludedPaths).to.have.members(paths.slice(3));
     });
 
+    it('Expect a single extension to filter', function () {
+      const extension = '.test.ejs';
+      const specs = ['**/*'];
+      const paths = [
+        '/allow/path.ts',
+        '/allow/path.js',
+        '/allow/path.test.ejs',
+        '/allow/path.cpp',
+        '/allow/path.test.mjs',
+      ];
+
+      const [includedPaths, excludedPaths] = filterPaths(paths, specs, extension);
+      expect(includedPaths).to.have.members(paths.splice(2, 1));
+      expect(excludedPaths).to.have.members(paths);
+    });
+
     it('Expect to ignore extensions when spec path has an extension', function () {
       const extensions = ['.ts', '.js', '.test.ejs'];
       const specs = ['**/*.cpp'];
