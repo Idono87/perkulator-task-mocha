@@ -86,13 +86,14 @@ export async function loadOptions(rcPath?: string): Promise<MochaRC | undefined>
 
 export function filterPaths(
   filePaths: string[],
-  spec: string[] = ['**/*.spec.js'],
-  extensions?: string[],
+  spec: string | string[] = './**/*',
+  extension: string | string[] = ['.js', '.cjs', '.mjs'],
 ): [string[], string[]] {
-  const fileExtensions = extensions === undefined ? '' : `{${extensions?.join(',')}}`;
+  const globs: string[] = [spec].flat();
+  const fileExtensions = `{${[extension].flat().join(',')}}`;
 
-  const includeGlobList = spec.map((specPath) =>
-    path.extname(specPath) === '' ? `${specPath}${fileExtensions}` : specPath,
+  const includeGlobList = globs.map((globPath) =>
+    path.extname(globPath) === '' ? `${globPath}${fileExtensions}` : globPath,
   );
 
   const isIncludedPath = anymatch(includeGlobList);

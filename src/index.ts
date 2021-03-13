@@ -28,14 +28,11 @@ export const run: RunnableTask['run'] = async function (
   // Unset unsupported options.
   delete mochaOptions.reporter; // Only use built in reporter
 
-  const globs: string[] = new Array<string>().concat(spec ?? '*');
-  const extensions: string[] = new Array<string>().concat(extension ?? '.js');
-
-  const [removedTestModules, removedFiles] = filterPaths(changedPaths.remove, globs, extensions);
+  const [removedTestModules, removedFiles] = filterPaths(changedPaths.remove, spec, extension);
   const [changedTestModules, changedFiles] = filterPaths(
     [...changedPaths.add, ...changedPaths.change],
-    globs,
-    extensions,
+    spec,
+    extension,
   );
 
   // Remove deleted test modules before querying the cache

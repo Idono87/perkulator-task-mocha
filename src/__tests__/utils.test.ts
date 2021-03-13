@@ -38,18 +38,12 @@ describe('Utilities', function () {
     });
 
     it('Expect default paths', function () {
-      const paths = [
-        '/allow/path.ts',
-        '/allow/path.js',
-        '/allow/path.test.ejs',
-        '/allow/path.cpp',
-        '/allow/path.spec.js',
-        '/allow/path.test.mjs',
-      ];
+      const include = ['/allow/path.js', '/allow/path.test.cjs', '/allow/path.spec.js', '/allow/path.test.mjs'];
+      const exclude = ['/allow/path.cpp', '/allow/path.ts'];
 
-      const [includedPaths, excludedPaths] = filterPaths(paths);
-      expect(includedPaths).to.have.members(paths.splice(4, 1));
-      expect(excludedPaths).to.have.members(paths);
+      const [includedPaths, excludedPaths] = filterPaths([include, exclude].flat());
+      expect(includedPaths).to.have.members(include);
+      expect(excludedPaths).to.have.members(exclude);
     });
   });
 
