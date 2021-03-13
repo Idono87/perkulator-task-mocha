@@ -25,6 +25,7 @@ export class TaskReporter extends reporters.Base {
   }
 
   private runEnd(): void {
+    this.runner.dispose();
     this.resultsListener(
       this.rootSuite !== null
         ? parseResults(this.rootSuite)
