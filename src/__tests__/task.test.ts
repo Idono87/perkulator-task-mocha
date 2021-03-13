@@ -118,9 +118,9 @@ describe('Task', function () {
         undefined,
       );
 
-      expect(moduleMapCacheStub.saveCache).to.be.calledOnce;
+      expect(moduleMapCacheStub.saveCache).to.be.calledOnce.and.calledOn(moduleMapCacheStub);
       addedFiles.forEach((path) => {
-        expect(moduleMapCacheStub.mapModule).to.be.calledWith(path);
+        expect(moduleMapCacheStub.mapModule).to.be.calledWith(path).and.calledOn(moduleMapCacheStub);
       });
     });
 
@@ -142,9 +142,9 @@ describe('Task', function () {
         undefined,
       );
 
-      expect(moduleMapCacheStub.saveCache).to.be.calledOnce;
-      expect(moduleMapCacheStub.mapModule).to.be.calledOnceWith(addedFiles[0]);
-      expect(moduleMapCacheStub.clearModule).to.be.calledWith(removedFiles[0]);
+      expect(moduleMapCacheStub.saveCache).to.be.calledOnce.and.calledOn(moduleMapCacheStub);
+      expect(moduleMapCacheStub.mapModule).to.be.calledOnceWith(addedFiles[0]).and.calledOn(moduleMapCacheStub);
+      expect(moduleMapCacheStub.clearModule).to.be.calledWith(removedFiles[0]).and.calledOn(moduleMapCacheStub);
     });
 
     it('Expect removed file to get cached test modules', async function () {
@@ -165,9 +165,9 @@ describe('Task', function () {
         undefined,
       );
 
-      expect(moduleMapCacheStub.saveCache).to.be.calledOnce;
-      expect(moduleMapCacheStub.mapModule).to.be.calledOnceWith(addedFiles[0]);
-      expect(moduleMapCacheStub.getRootModules).to.be.calledWith(removedFiles[0]);
+      expect(moduleMapCacheStub.saveCache).to.be.calledOnce.and.calledOn(moduleMapCacheStub);
+      expect(moduleMapCacheStub.mapModule).to.be.calledOnceWith(addedFiles[0]).and.calledOn(moduleMapCacheStub);
+      expect(moduleMapCacheStub.getRootModules).to.be.calledWith(removedFiles[0]).and.calledOn(moduleMapCacheStub);
     });
 
     it('Expect to get a result object with failures', async function () {
