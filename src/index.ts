@@ -14,25 +14,18 @@ export interface MochaRC extends Mocha.MochaOptions {
 
 let runningRunner: Mocha.Runner | null = null;
 
-/*
- * Imports modules required in the mocha config
- */
-function importRequiredModules(modules?: string | string[]): void {
-  if (modules !== undefined) {
-    [modules].flat().forEach((path) => {
-      require(path);
-    });
-  }
-}
-
-export const run: RunnableTask['run'] = async function (changedPaths, update, options): Promise<TaskResultsObject> {
+export const run: RunnableTask['run'] = async function (
+  changedPaths,
+  update,
+  options: MochaRC = {},
+): Promise<TaskResultsObject> {
   const moduleMap = ModuleMapCache.loadCache();
 
-  const { extension, spec, ...mochaOptions } = Object.assign<MochaRC, MochaRC>(
-    (await loadOptions()) ?? {},
-    options ?? {},
-  );
-  mochaOptions.reporter = undefined;
+  const rc = (await loadOptions()) ?? {};
+  const { extension, spec, ...mochaOptions } = Object.assign(rc, options);
+
+  // Unset unsupported options.
+  delete mochaOptions.reporter; // Only use built in reporter
 
   const globs: string[] = new Array<string>().concat(spec ?? '*');
   const extensions: string[] = new Array<string>().concat(extension ?? '.js');
@@ -44,8 +37,10 @@ export const run: RunnableTask['run'] = async function (changedPaths, update, op
     extensions,
   );
 
+  // Remove deleted test modules before querying the cache
   removedTestModules.forEach((filePath) => moduleMap.clearModule(filePath));
 
+  // Get all test modules with an association to the given files
   const cachedTestModules = [changedFiles, removedFiles]
     .flat()
     .reduce(
@@ -61,7 +56,12 @@ export const run: RunnableTask['run'] = async function (changedPaths, update, op
     };
   }
 
-  importRequiredModules(mochaOptions.require);
+  // Import all requires
+  if (mochaOptions.require !== undefined) {
+    [mochaOptions.require].flat().forEach((path) => {
+      require(path);
+    });
+  }
 
   const mocha = new Mocha(mochaOptions);
 
@@ -83,6 +83,7 @@ export const run: RunnableTask['run'] = async function (changedPaths, update, op
   }
 
   mocha.unloadFiles();
+  mocha.dispose();
   runningRunner = null;
 
   return results;
