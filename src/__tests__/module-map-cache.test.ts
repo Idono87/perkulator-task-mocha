@@ -85,6 +85,23 @@ describe('Cache', function () {
         moduleMap: {},
       });
     });
+
+    it(`Expect to save the cache in node_modules`, function () {
+      writeFileSyncStub.restore();
+      readFileSyncStub.restore();
+      const readFileSpy = Sinon.spy(fs, 'readFileSync');
+
+      const cache = ModuleMapCache.loadCache();
+      cache.saveCache();
+      ModuleMapCache.loadCache();
+
+      expect(readFileSpy).to.have.returned(
+        JSON.stringify({
+          cacheId: process.pid,
+          moduleMap: {},
+        }),
+      );
+    });
   });
 
   describe('mapModule', function () {

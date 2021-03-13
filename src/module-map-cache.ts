@@ -120,6 +120,8 @@ export class ModuleMapCache {
 
   public saveCache(): void {
     const stringifiedCache = JSON.stringify(this, replacer);
+
+    fs.mkdirSync(path.dirname(CACHE_LOCATION), { recursive: true });
     fs.writeFileSync(CACHE_LOCATION, stringifiedCache, 'utf-8');
   }
 }
