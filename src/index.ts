@@ -9,9 +9,21 @@ import { loadOptions, filterPaths } from './utils';
 export interface MochaRC extends Mocha.MochaOptions {
   extension?: string | string[];
   spec?: string | string[];
+  require?: string | string[];
 }
 
 let runningRunner: Mocha.Runner | null = null;
+
+/*
+ * Imports modules required in the mocha config
+ */
+function importRequiredModules(modules?: string | string[]): void {
+  if (modules !== undefined) {
+    [modules].flat().forEach((path) => {
+      require(path);
+    });
+  }
+}
 
 export const run: RunnableTask['run'] = async function (changedPaths, update, options): Promise<TaskResultsObject> {
   const moduleMap = ModuleMapCache.loadCache();
@@ -48,6 +60,8 @@ export const run: RunnableTask['run'] = async function (changedPaths, update, op
       results: [chalk.yellow('Skipped. No changes to test files detected.')],
     };
   }
+
+  importRequiredModules(mochaOptions.require);
 
   const mocha = new Mocha(mochaOptions);
 

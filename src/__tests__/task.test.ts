@@ -1,5 +1,6 @@
 import { expect, use } from 'chai';
 import { createSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as sinonChai from 'sinon-chai';
 import * as Mocha from 'mocha';
 import * as chalk from 'chalk';
@@ -10,6 +11,7 @@ import * as utils from '../utils';
 import { createFilePaths, createMixedFilePaths, createTestFilePaths } from './util/util';
 
 use(sinonChai);
+use(chaiAsPromised);
 
 describe('Task', function () {
   const Sinon = createSandbox();
@@ -237,6 +239,54 @@ describe('Task', function () {
         () => {},
         undefined,
       );
+    });
+  });
+
+  describe('options', function () {
+    const modulePath1 = require.resolve('./fixtures/options/require_1');
+    const modulePath2 = require.resolve('./fixtures/options/require_2');
+
+    const modulePathId1 = require.resolve('./fixtures/options/require_1').replace(/\\/g, '\\');
+    const modulePathId2 = require.resolve('./fixtures/options/require_2').replace(/\\/g, '\\');
+
+    afterEach(function () {
+      /* eslint-disable */
+      delete require.cache[modulePathId1];
+      delete require.cache[modulePathId2];
+      /* eslint-enable */
+    });
+
+    it('Expect required module to be imported', async function () {
+      const mochaRc: MochaRC = {
+        spec: './**/*.test.ts',
+        require: modulePath1,
+      };
+
+      await run({ add: [require.resolve('./fixtures/tests/passing.test')], change: [], remove: [] }, () => {}, mochaRc);
+      console.log(modulePath1.replace(/\\/g, '\\\\'));
+      expect(require.cache).to.have.any.keys(modulePath1.replace(/\\/g, '\\'));
+    });
+
+    it('Expect required modules to be imported', async function () {
+      const mochaRc: MochaRC = {
+        spec: './**/*.test.ts',
+        require: [modulePath1, modulePath2],
+      };
+
+      await run({ add: [require.resolve('./fixtures/tests/passing.test')], change: [], remove: [] }, () => {}, mochaRc);
+      expect(require.cache).to.have.any.keys(modulePathId1);
+      expect(require.cache).to.have.any.keys(modulePathId2);
+    });
+
+    it(`Expect to throw if modules doesn't exist`, function () {
+      const mochaRc: MochaRC = {
+        spec: './**/*.test.ts',
+        require: ['./not/a/real/module'],
+      };
+
+      return expect(
+        run({ add: [require.resolve('./fixtures/tests/passing.test')], change: [], remove: [] }, () => {}, mochaRc),
+      ).to.be.rejected;
     });
   });
 });
