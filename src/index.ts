@@ -10,6 +10,7 @@ export interface MochaRC extends Mocha.MochaOptions {
   extension?: string | string[];
   spec?: string | string[];
   require?: string | string[];
+  file?: string | string[];
 }
 
 let runningRunner: Mocha.Runner | null = null;
@@ -65,6 +66,7 @@ export const run: RunnableTask['run'] = async function (
 
   const mocha = new Mocha(mochaOptions);
 
+  mochaOptions.file !== undefined && [mochaOptions.file].flat().forEach((modulePath) => mocha.addFile(modulePath));
   testModulePaths.forEach((modulePath) => mocha.addFile(modulePath));
 
   const results = await new Promise<TaskResultsObject>((resolve, reject) => {
