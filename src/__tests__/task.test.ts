@@ -263,7 +263,6 @@ describe('Task', function () {
       };
 
       await run({ add: [require.resolve('./fixtures/tests/passing.test')], change: [], remove: [] }, () => {}, mochaRc);
-      console.log(modulePath1.replace(/\\/g, '\\\\'));
       expect(require.cache).to.have.any.keys(modulePath1.replace(/\\/g, '\\'));
     });
 
