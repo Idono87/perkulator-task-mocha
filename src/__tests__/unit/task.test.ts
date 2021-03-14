@@ -5,10 +5,10 @@ import * as sinonChai from 'sinon-chai';
 import * as Mocha from 'mocha';
 import * as chalk from 'chalk';
 
-import { run, stop, MochaRC } from '../index';
-import { ModuleMapCache } from '../module-map-cache';
-import * as utils from '../utils';
-import { createFilePaths, createMixedFilePaths, createTestFilePaths } from './util/util';
+import { run, stop, MochaRC } from '../../index';
+import { ModuleMapCache } from '../../module-map-cache';
+import * as utils from '../../utils';
+import { createFilePaths, createMixedFilePaths, createTestFilePaths } from '../util/util';
 
 use(sinonChai);
 use(chaiAsPromised);
@@ -86,7 +86,7 @@ describe('Task', function () {
       loadOptionsStub.returns(mochaRc);
 
       const resultsObject = await run(
-        { add: [require.resolve('./fixtures/tests/passing.test')], change: [], remove: [] },
+        { add: [require.resolve('../fixtures/tests/passing.test')], change: [], remove: [] },
         () => {},
         undefined,
       );
@@ -103,8 +103,8 @@ describe('Task', function () {
         spec: './**/*.test.ts',
       };
       const addedFiles = [
-        require.resolve('./fixtures/tests/passing.test'),
-        require.resolve('./fixtures/cache/parent.test'),
+        require.resolve('../fixtures/tests/passing.test'),
+        require.resolve('../fixtures/cache/parent.test'),
       ];
       loadOptionsStub.returns(mochaRc);
 
@@ -128,8 +128,8 @@ describe('Task', function () {
       const mochaRc: MochaRC = {
         spec: './**/*.test.ts',
       };
-      const removedFiles = [require.resolve('./fixtures/tests/passing.test')];
-      const addedFiles = [require.resolve('./fixtures/cache/parent.test')];
+      const removedFiles = [require.resolve('../fixtures/tests/passing.test')];
+      const addedFiles = [require.resolve('../fixtures/cache/parent.test')];
       loadOptionsStub.returns(mochaRc);
 
       await run(
@@ -151,8 +151,8 @@ describe('Task', function () {
       const mochaRc: MochaRC = {
         spec: './**/*.test.ts',
       };
-      const addedFiles = [require.resolve('./fixtures/cache/parent.test')];
-      const removedFiles = [require.resolve('./fixtures/cache/child')];
+      const addedFiles = [require.resolve('../fixtures/cache/parent.test')];
+      const removedFiles = [require.resolve('../fixtures/cache/child')];
       loadOptionsStub.returns(mochaRc);
 
       await run(
@@ -177,7 +177,7 @@ describe('Task', function () {
       loadOptionsStub.returns(mochaRc);
 
       const resultsObject = await run(
-        { add: [require.resolve('./fixtures/tests/failing.test')], change: [], remove: [] },
+        { add: [require.resolve('../fixtures/tests/failing.test')], change: [], remove: [] },
         () => {},
         undefined,
       );
@@ -196,7 +196,7 @@ describe('Task', function () {
       loadOptionsStub.returns(mochaRc);
 
       await run(
-        { add: [require.resolve('./fixtures/tests/failing.test')], change: [], remove: [] },
+        { add: [require.resolve('../fixtures/tests/failing.test')], change: [], remove: [] },
         () => {},
         undefined,
       );
@@ -212,7 +212,7 @@ describe('Task', function () {
       loadOptionsStub.returns(mochaRc);
 
       const resultsObject = await run(
-        { add: [require.resolve('./fixtures/tests/mixed.test')], change: [], remove: [] },
+        { add: [require.resolve('../fixtures/tests/mixed.test')], change: [], remove: [] },
         () => {},
         undefined,
       );
@@ -235,7 +235,7 @@ describe('Task', function () {
       setImmediate(stop);
 
       await run(
-        { add: [require.resolve('./fixtures/tests/lengthy.test')], change: [], remove: [] },
+        { add: [require.resolve('../fixtures/tests/lengthy.test')], change: [], remove: [] },
         () => {},
         undefined,
       );
@@ -244,11 +244,11 @@ describe('Task', function () {
 
   describe('options', function () {
     describe('require', function () {
-      const modulePath1 = require.resolve('./fixtures/options/require_1');
-      const modulePath2 = require.resolve('./fixtures/options/require_2');
+      const modulePath1 = require.resolve('../fixtures/options/require_1');
+      const modulePath2 = require.resolve('../fixtures/options/require_2');
 
-      const modulePathId1 = require.resolve('./fixtures/options/require_1').replace(/\\/g, '\\');
-      const modulePathId2 = require.resolve('./fixtures/options/require_2').replace(/\\/g, '\\');
+      const modulePathId1 = require.resolve('../fixtures/options/require_1').replace(/\\/g, '\\');
+      const modulePathId2 = require.resolve('../fixtures/options/require_2').replace(/\\/g, '\\');
 
       afterEach(function () {
         /* eslint-disable */
@@ -264,7 +264,7 @@ describe('Task', function () {
         };
 
         await run(
-          { add: [require.resolve('./fixtures/tests/passing.test')], change: [], remove: [] },
+          { add: [require.resolve('../fixtures/tests/passing.test')], change: [], remove: [] },
           () => {},
           mochaRc,
         );
@@ -278,7 +278,7 @@ describe('Task', function () {
         };
 
         await run(
-          { add: [require.resolve('./fixtures/tests/passing.test')], change: [], remove: [] },
+          { add: [require.resolve('../fixtures/tests/passing.test')], change: [], remove: [] },
           () => {},
           mochaRc,
         );
@@ -293,7 +293,7 @@ describe('Task', function () {
         };
 
         return expect(
-          run({ add: [require.resolve('./fixtures/tests/passing.test')], change: [], remove: [] }, () => {}, mochaRc),
+          run({ add: [require.resolve('../fixtures/tests/passing.test')], change: [], remove: [] }, () => {}, mochaRc),
         ).to.be.rejected;
       });
     });
@@ -306,8 +306,8 @@ describe('Task', function () {
       });
 
       it('Expect a file to be added before test files are added', async function () {
-        const testModule = require.resolve('./fixtures/tests/passing.test');
-        const file = require.resolve('./fixtures/modules/module2.ts');
+        const testModule = require.resolve('../fixtures/tests/passing.test');
+        const file = require.resolve('../fixtures/modules/module2.ts');
 
         const mochaRc: MochaRC = {
           spec: './**/*.test.ts',
@@ -321,10 +321,10 @@ describe('Task', function () {
       });
 
       it('Expect files to be added before test files are added', async function () {
-        const testModule = require.resolve('./fixtures/tests/passing.test');
+        const testModule = require.resolve('../fixtures/tests/passing.test');
         const file = [
-          require.resolve('./fixtures/modules/module1.ts'),
-          require.resolve('./fixtures/modules/module2.ts'),
+          require.resolve('../fixtures/modules/module1.ts'),
+          require.resolve('../fixtures/modules/module2.ts'),
         ];
 
         const mochaRc: MochaRC = {

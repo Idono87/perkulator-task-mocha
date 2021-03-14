@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as sinonChai from 'sinon-chai';
 import * as path from 'path';
 
-import { ModuleMapCache } from '../module-map-cache';
+import { ModuleMapCache } from '../../module-map-cache';
 import { before } from 'mocha';
 
 use(sinonChai);
@@ -106,13 +106,13 @@ describe('Cache', function () {
 
   describe('mapModule', function () {
     before(function () {
-      require('./fixtures/cache/parent.test');
+      require('../fixtures/cache/parent.test');
     });
 
     it('Expect all nested children in the test file to be mapped', function () {
-      const PARENT = path.resolve(__dirname, './fixtures/cache/parent.test.ts');
-      const CHILD = path.resolve(__dirname, './fixtures/cache/child.ts');
-      const GRANDCHILD = path.resolve(__dirname, './fixtures/cache/grandchild.ts');
+      const PARENT = path.resolve(__dirname, '../fixtures/cache/parent.test.ts');
+      const CHILD = path.resolve(__dirname, '../fixtures/cache/child.ts');
+      const GRANDCHILD = path.resolve(__dirname, '../fixtures/cache/grandchild.ts');
       throwEnoentWithReadFileStub();
 
       const cache = ModuleMapCache.loadCache();
@@ -130,12 +130,12 @@ describe('Cache', function () {
 
   describe('clearModule', function () {
     before(function () {
-      require('./fixtures/cache/parent.test');
-      require('./fixtures/cache/parent2.test');
+      require('../fixtures/cache/parent.test');
+      require('../fixtures/cache/parent2.test');
     });
 
     it(`Expect the mapped module including it's nested children to be removed from the map`, function () {
-      const PARENT = path.resolve(__dirname, './fixtures/cache/parent.test.ts');
+      const PARENT = path.resolve(__dirname, '../fixtures/cache/parent.test.ts');
       throwEnoentWithReadFileStub();
 
       const cache = ModuleMapCache.loadCache();
@@ -148,9 +148,9 @@ describe('Cache', function () {
     });
 
     it(`Expect to remove parent module and children with no remaining references`, function () {
-      const PARENT = path.resolve(__dirname, './fixtures/cache/parent.test.ts');
-      const PARENT2 = path.resolve(__dirname, './fixtures/cache/parent2.test.ts');
-      const GRANDCHILD = path.resolve(__dirname, './fixtures/cache/grandchild.ts');
+      const PARENT = path.resolve(__dirname, '../fixtures/cache/parent.test.ts');
+      const PARENT2 = path.resolve(__dirname, '../fixtures/cache/parent2.test.ts');
+      const GRANDCHILD = path.resolve(__dirname, '../fixtures/cache/grandchild.ts');
       throwEnoentWithReadFileStub();
 
       const cache = ModuleMapCache.loadCache();
@@ -169,16 +169,16 @@ describe('Cache', function () {
 
   describe('getRootModules', function () {
     before(function () {
-      require('./fixtures/cache/parent.test');
-      require('./fixtures/cache/parent2.test');
+      require('../fixtures/cache/parent.test');
+      require('../fixtures/cache/parent2.test');
     });
 
     it('Expect to get root modules', function () {
       throwEnoentWithReadFileStub();
 
-      const PARENT = path.resolve(__dirname, './fixtures/cache/parent.test.ts');
-      const PARENT2 = path.resolve(__dirname, './fixtures/cache/parent2.test.ts');
-      const GRANDCHILD = path.resolve(__dirname, './fixtures/cache/grandchild.ts');
+      const PARENT = path.resolve(__dirname, '../fixtures/cache/parent.test.ts');
+      const PARENT2 = path.resolve(__dirname, '../fixtures/cache/parent2.test.ts');
+      const GRANDCHILD = path.resolve(__dirname, '../fixtures/cache/grandchild.ts');
 
       const cache = ModuleMapCache.loadCache();
       cache.mapModule(PARENT);

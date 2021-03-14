@@ -7,7 +7,9 @@
     "typeCheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts",
     "pretest": "npm run lint && npm run typeCheck",
-    "test": "cross-env NODE_ENV=test mocha",
+    "test": "npm run test-unit && npm run test-integration",
+    "test-unit": "cross-env NODE_ENV=test mocha",
+    "test-integration": "cross-env NODE_ENV=test INTEGRATION_TEST=true mocha",
     "coverage": "nyc npm test",
     "prebuild": "rimraf ./dist",
     "build": "tsc --build ./config/tsconfig-production.json"

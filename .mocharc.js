@@ -1,3 +1,5 @@
+const isIntegrationTest = Boolean(process.env.INTEGRATION_TEST);
+
 module.exports = {
   allowUncaught: false,
   bail: false,
@@ -7,9 +9,9 @@ module.exports = {
   recursive: true,
   exit: true,
   useStrict: true,
-  extensions: ['.ts'],
+  extensions: ['.test.ts'],
   exclude: ['**/fixtures/**/*'],
   require: ['ts-node/register'],
   reporter: 'min',
-  spec: ['src/__tests__/**/*.test.ts'],
+  spec: isIntegrationTest ? 'src/__tests__/integration/**/*' : 'src/__tests__/unit/**/*',
 };
