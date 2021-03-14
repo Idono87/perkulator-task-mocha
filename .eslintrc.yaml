@@ -13,7 +13,6 @@ plugins:
 extends:
   - 'standard-with-typescript'
   - 'prettier'
-  - 'prettier/@typescript-eslint'
 
 rules:
   comma-dangle:
