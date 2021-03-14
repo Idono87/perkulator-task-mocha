@@ -1,17 +1,23 @@
 import { expect, use } from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import * as sinonChai from 'sinon-chai';
 import { ChangedPaths } from 'perkulator';
 import { createSandbox } from 'sinon';
 import * as Mocha from 'mocha';
+import * as fs from 'fs';
+import * as path from 'path';
+
 import { MochaRC, run } from '../../index';
 
 use(chaiAsPromised);
+use(sinonChai);
 
 describe('Perkulator Task Mocha', function () {
   const Sinon = createSandbox();
 
   afterEach(function () {
     Sinon.restore();
+    fs.rmSync(path.resolve(process.cwd(), 'node_modules', '.perkulator_cache'), { recursive: true, force: true });
   });
 
   describe('run', function () {
