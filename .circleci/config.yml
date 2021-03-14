@@ -54,6 +54,14 @@ jobs:
           command: npm run test -- --reporter mocha-junit-reporter --reporter-option mochaFile="./test-results/mocha/results.xml"
       - store_test_results:
           path: test-results
+  integrationTest:
+    executor: node-14_16_0
+    steps:
+      - attach_workspace:
+          at: ./
+      - run: npm run test-integration -- --reporter mocha-junit-reporter --reporter-option mochaFile="./test-results/mocha/integration-test.xml"
+      - store_test_results:
+          path: test-results
 
 workflows:
   version: 2
@@ -67,6 +75,10 @@ workflows:
           requires:
             - init
       - unitTest:
+          requires:
+            - lint
+            - typeCheck
+      - integrationTest:
           requires:
             - lint
             - typeCheck
