@@ -1,6 +1,6 @@
 {
   "name": "perkulator-task-mocha",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.0",
   "description": "Mocha task for Perkulator",
   "main": "dist/index.js",
   "scripts": {
