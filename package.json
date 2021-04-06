@@ -15,7 +15,7 @@
     "build": "tsc --build ./config/tsconfig-production.json"
   },
   "author": "Sorin Sandru",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "anymatch": "^3.1.1",
     "chalk": "^4.1.0",
